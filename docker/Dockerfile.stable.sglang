@@ -1,22 +1,25 @@
 # sgl059
 
-FROM lmsysorg/sglang:v0.5.9
-
+FROM  lmsysorg/sglang:v0.5.9
 ARG PIP_NO_CACHE_DIR=1
 
-RUN pip install pybind11
+RUN env | grep -i proxy || true
 
-RUN pip install nvidia-mathdx
 
-RUN MAX_JOBS=128 pip install -v --disable-pip-version-check --no-build-isolation --config-settings "--build-option=--cpp_ext" --config-settings "--build-option=--cuda_ext" git+https://github.com/NVIDIA/apex.git
+RUN python -m pip  install  pybind11  
 
-RUN export NVTE_FRAMEWORK=pytorch && MAX_JOBS=128 NVTE_BUILD_THREADS_PER_JOB=4 pip3 install --resume-retries 999 --no-build-isolation git+https://github.com/NVIDIA/TransformerEngine.git@release_v2.12
+RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple nvidia-mathdx
+
+RUN MAX_JOBS=128 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -v --disable-pip-version-check --no-build-isolation --config-settings "--build-option=--cpp_ext" --config-settings "--build-option=--cuda_ext" git+https://github.com/NVIDIA/apex.git
+
+RUN export NVTE_FRAMEWORK=pytorch && MAX_JOBS=8 NVTE_BUILD_THREADS_PER_JOB=4 pip3 install --resume-retries 999 --no-build-isolation git+https://github.com/NVIDIA/TransformerEngine.git@release_v2.12
+
 
 # RUN pip install --upgrade transformers tokenizers
 
-RUN pip install codetiming mathruler pylatexenc qwen_vl_utils cachetools pytest-asyncio
+RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple codetiming mathruler pylatexenc qwen_vl_utils cachetools pytest-asyncio
 
-RUN pip install --no-build-isolation flash_attn==2.8.3
+RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-build-isolation flash_attn==2.8.3
 
 RUN NSIGHT_VERSION=2025.6.1_2025.6.1.190-1_$(if [ "$(uname -m)" = "aarch64" ]; then echo "arm64"; else echo "amd64"; fi) && \
     wget https://developer.nvidia.com/downloads/assets/tools/secure/nsight-systems/2025_6/nsight-systems-${NSIGHT_VERSION}.deb && \
@@ -30,9 +33,9 @@ RUN NSIGHT_VERSION=2025.6.1_2025.6.1.190-1_$(if [ "$(uname -m)" = "aarch64" ]; t
 
 # sglang image has already installed DeepEP
 
-RUN pip3 install --no-deps trl==0.27.0
+RUN pip3 install  -i https://pypi.tuna.tsinghua.edu.cn/simple  --no-deps trl==0.27.0
 
-RUN pip3 install nvtx matplotlib liger_kernel
+RUN pip3 install  -i https://pypi.tuna.tsinghua.edu.cn/simple nvtx matplotlib liger_kernel
 
 RUN pip install -U git+https://github.com/ISEEKYAN/mbridge.git
 

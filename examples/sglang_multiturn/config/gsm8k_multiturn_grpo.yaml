@@ -12,10 +12,53 @@ data:
   train_batch_size: 256
   return_raw_chat: True
 
+# ========== 新增：Global Profiler ==========
+global_profiler:
+  tool: torch
+  steps: [1, 2]
+  save_path: ./outputs/profile
+  global_tool_config:
+    torch:
+      step_start: 1
+      step_end: 2
+
+# ========== 新增：Trainer（控制采集步骤）==========
+trainer:
+  profile_steps: [1, 2]
+  total_training_steps: 2
+
+# ========== 修改：补充 Actor/Rollout/Ref 的 Profiler ==========
 actor_rollout_ref:
   hybrid_engine: True
+
+  # 新增：Actor Profiler
+  actor:
+    profiler:
+      enable: True
+      tool: torch
+      all_ranks: False
+      ranks: [0]
+      save_path: ./outputs/profile
+
+  # 新增：Ref Profiler（建议开启，用于对比）
+  ref:
+    profiler:
+      enable: True
+      tool: torch
+      ranks: [0]
+      save_path: ./outputs/profile
+
+  # 修改：Rollout 添加 Profiler
   rollout:
     name: sglang
+    mode: async
     multi_turn:
       enable: True
       max_assistant_turns: 5
+    # 新增：Rollout Profiler
+    profiler:
+      enable: True
+      tool: torch
+      all_ranks: False
+      ranks: [0]
+      save_path: ./outputs/profile
